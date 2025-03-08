@@ -2,6 +2,7 @@ package com.paymentsystem.membership.adapter.out.persistence;
 
 import com.paymentsystem.common.PersistenceAdapter;
 import com.paymentsystem.membership.application.port.out.FindMembershipPort;
+import com.paymentsystem.membership.application.port.out.ModifyMembershipPort;
 import com.paymentsystem.membership.application.port.out.RegisterMembershipPort;
 import com.paymentsystem.membership.domain.Membership;
 import com.paymentsystem.membership.domain.Membership.MembershipAddress;
@@ -14,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @PersistenceAdapter
 @RequiredArgsConstructor
-public class MembershipPersistenceAdapter implements RegisterMembershipPort, FindMembershipPort {
+public class MembershipPersistenceAdapter implements RegisterMembershipPort, FindMembershipPort, ModifyMembershipPort {
 
   private final SpringDataMembershipRepository membershipRepository;
   private final MembershipMapper membershipMapper;
@@ -42,5 +43,24 @@ public class MembershipPersistenceAdapter implements RegisterMembershipPort, Fin
     return membershipMapper.mapToDomainEntity(
         membershipRepository.getById(Long.parseLong(membershipId.getMembershipId()))
     );
+  }
+
+  @Override
+  public MembershipJpaEntity modifyMembership(MembershipId membershipId,
+                                              MembershipName membershipName,
+                                              MembershipEmail membershipEmail,
+                                              MembershipAddress membershipAddress,
+                                              MembershipIsValid membershipIsValid,
+                                              MembershipIsCorp membershipIsCorp)
+  {
+    MembershipJpaEntity entity = membershipRepository.getById(Long.parseLong(membershipId.getMembershipId()));
+
+    entity.setName(membershipName.getNameValue());
+    entity.setEmail(membershipEmail.getEmailValue());
+    entity.setAddress(membershipAddress.getAddressValue());
+    entity.setCorp(membershipIsCorp.isCorpValue());
+    entity.setValid(membershipIsValid.isValidValue());
+
+    return membershipRepository.save(entity);
   }
 }

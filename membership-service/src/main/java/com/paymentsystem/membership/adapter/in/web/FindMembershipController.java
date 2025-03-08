@@ -18,11 +18,12 @@ public class FindMembershipController {
   private final FindMembershipUseCase findMembershipUseCase;
 
   @GetMapping(path = "/membership/{membershipId}")
-  ResponseEntity<Membership> findMembershipByMemberId(@PathVariable String membershipId){
+  public ResponseEntity<Membership> findMembershipByMemberId(@PathVariable String membershipId){
 
     FindMembershipCommand command = FindMembershipCommand.builder()
         .membershipId(membershipId)
         .build();
     return ResponseEntity.ok(findMembershipUseCase.findMembership(command));
   }
+
 }
